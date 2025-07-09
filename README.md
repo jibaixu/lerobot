@@ -1,64 +1,3 @@
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="media/lerobot-logo-thumbnail.png">
-    <source media="(prefers-color-scheme: light)" srcset="media/lerobot-logo-thumbnail.png">
-    <img alt="LeRobot, Hugging Face Robotics Library" src="media/lerobot-logo-thumbnail.png" style="max-width: 100%;">
-  </picture>
-  <br/>
-  <br/>
-</p>
-
-<div align="center">
-
-[![Tests](https://github.com/huggingface/lerobot/actions/workflows/nightly-tests.yml/badge.svg?branch=main)](https://github.com/huggingface/lerobot/actions/workflows/nightly-tests.yml?query=branch%3Amain)
-[![Coverage](https://codecov.io/gh/huggingface/lerobot/branch/main/graph/badge.svg?token=TODO)](https://codecov.io/gh/huggingface/lerobot)
-[![Python versions](https://img.shields.io/pypi/pyversions/lerobot)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/huggingface/lerobot/blob/main/LICENSE)
-[![Status](https://img.shields.io/pypi/status/lerobot)](https://pypi.org/project/lerobot/)
-[![Version](https://img.shields.io/pypi/v/lerobot)](https://pypi.org/project/lerobot/)
-[![Examples](https://img.shields.io/badge/Examples-green.svg)](https://github.com/huggingface/lerobot/tree/main/examples)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.1%20adopted-ff69b4.svg)](https://github.com/huggingface/lerobot/blob/main/CODE_OF_CONDUCT.md)
-[![Discord](https://dcbadge.vercel.app/api/server/C5P34WJ68S?style=flat)](https://discord.gg/s3KuuzsPFb)
-
-</div>
-
-<h2 align="center">
-    <p><a href="https://huggingface.co/docs/lerobot/so101">
-        Build Your Own SO-101 Robot!</a></p>
-</h2>
-
-<div align="center">
-  <div style="display: flex; gap: 1rem; justify-content: center; align-items: center;" >
-    <img
-      src="media/so101/so101.webp?raw=true"
-      alt="SO-101 follower arm"
-      title="SO-101 follower arm"
-      style="width: 40%;"
-    />
-    <img
-      src="media/so101/so101-leader.webp?raw=true"
-      alt="SO-101 leader arm"
-      title="SO-101 leader arm"
-      style="width: 40%;"
-    />
-  </div>
-
-
-  <p><strong>Meet the updated SO100, the SO-101 – Just €114 per arm!</strong></p>
-  <p>Train it in minutes with a few simple moves on your laptop.</p>
-  <p>Then sit back and watch your creation act autonomously! 🤯</p>
-
-  <p><a href="https://huggingface.co/docs/lerobot/so101">
-      See the full SO-101 tutorial here.</a></p>
-
-  <p>Want to take it to the next level? Make your SO-101 mobile by building LeKiwi!</p>
-  <p>Check out the <a href="https://huggingface.co/docs/lerobot/lekiwi">LeKiwi tutorial</a> and bring your robot to life on wheels.</p>
-
-  <img src="media/lekiwi/kiwi.webp?raw=true" alt="LeKiwi mobile robot" title="LeKiwi mobile robot" width="50%">
-</div>
-
-<br/>
-
 <h3 align="center">
     <p>LeRobot: State-of-the-art AI for real-world robotics</p>
 </h3>
@@ -72,31 +11,6 @@
 🤗 LeRobot already provides a set of pretrained models, datasets with human collected demonstrations, and simulation environments to get started without assembling a robot. In the coming weeks, the plan is to add more and more support for real-world robotics on the most affordable and capable robots out there.
 
 🤗 LeRobot hosts pretrained models and datasets on this Hugging Face community page: [huggingface.co/lerobot](https://huggingface.co/lerobot)
-
-#### Examples of pretrained models on simulation environments
-
-<table>
-  <tr>
-    <td><img src="media/gym/aloha_act.gif" width="100%" alt="ACT policy on ALOHA env"/></td>
-    <td><img src="media/gym/simxarm_tdmpc.gif" width="100%" alt="TDMPC policy on SimXArm env"/></td>
-    <td><img src="media/gym/pusht_diffusion.gif" width="100%" alt="Diffusion policy on PushT env"/></td>
-  </tr>
-  <tr>
-    <td align="center">ACT policy on ALOHA env</td>
-    <td align="center">TDMPC policy on SimXArm env</td>
-    <td align="center">Diffusion policy on PushT env</td>
-  </tr>
-</table>
-
-### Acknowledgment
-
-- The LeRobot team 🤗 for building SmolVLA [Paper](https://arxiv.org/abs/2506.01844), [Blog](https://huggingface.co/blog/smolvla).
-- Thanks to Tony Zhao, Zipeng Fu and colleagues for open sourcing ACT policy, ALOHA environments and datasets. Ours are adapted from [ALOHA](https://tonyzhaozh.github.io/aloha) and [Mobile ALOHA](https://mobile-aloha.github.io).
-- Thanks to Cheng Chi, Zhenjia Xu and colleagues for open sourcing Diffusion policy, Pusht environment and datasets, as well as UMI datasets. Ours are adapted from [Diffusion Policy](https://diffusion-policy.cs.columbia.edu) and [UMI Gripper](https://umi-gripper.github.io).
-- Thanks to Nicklas Hansen, Yunhai Feng and colleagues for open sourcing TDMPC policy, Simxarm environments and datasets. Ours are adapted from [TDMPC](https://github.com/nicklashansen/tdmpc) and [FOWM](https://www.yunhaifeng.com/FOWM).
-- Thanks to Antonio Loquercio and Ashish Kumar for their early support.
-- Thanks to [Seungjae (Jay) Lee](https://sjlee.cc/), [Mahi Shafiullah](https://mahis.life/) and colleagues for open sourcing [VQ-BeT](https://sjlee.cc/vq-bet/) policy and helping us adapt the codebase to our repository. The policy is adapted from [VQ-BeT repo](https://github.com/jayLEE0301/vq_bet_official).
-
 
 ## Installation
 
@@ -126,6 +40,8 @@ conda install ffmpeg -c conda-forge
 
 Install 🤗 LeRobot:
 ```bash
+# pyproject.toml中会安装最新的torch，可以注释掉dependencies中的torch/torchvision，手动安装
+# conda install pytorch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 pytorch-cuda=12.4 -c pytorch -c nvidia
 pip install -e .
 ```
 
@@ -263,6 +179,11 @@ We provide some pretrained policies on our [hub page](https://huggingface.co/ler
 You can reproduce their training by loading the config from their run. Simply running:
 ```bash
 python -m lerobot.scripts.train --config_path=lerobot/diffusion_pusht
+
+# 可能报错draccus.utils.DecodingError: `dataset`: The fields `local_files_only` are not valid for DatasetConfig
+# 原因是由于从huggingface缓存中下载过时信息
+# 需要从~/.cache/huggingface/hub/models--lerobot--diffusion_pusht/snapshots/train_config.json中删除local_files_only字段
+# 位于代码行62: "local_files_only": false;
 ```
 reproduces SOTA results for Diffusion Policy on the PushT task.
 
@@ -332,81 +253,59 @@ with profile(
             # insert code to profile, potentially whole body of eval_policy function
 ```
 
-## Citation
+## LeRobot数据集结构
 
-If you want, you can cite this work with:
-```bibtex
-@misc{cadene2024lerobot,
-    author = {Cadene, Remi and Alibert, Simon and Soare, Alexander and Gallouedec, Quentin and Zouitine, Adil and Palma, Steven and Kooijmans, Pepijn and Aractingi, Michel and Shukor, Mustafa and Aubakirova, Dana and Russi, Martino and Capuano, Francesco and Pascale, Caroline and Choghari, Jade and Moss, Jess and Wolf, Thomas},
-    title = {LeRobot: State-of-the-art Machine Learning for Real-World Robotics in Pytorch},
-    howpublished = "\url{https://github.com/huggingface/lerobot}",
-    year = {2024}
-}
+```bash
+lerobot_dataset/
+├── data/
+│   └── chunk-000/
+│       ├── episode_000000.parquet
+│       ├── episode_000001.parquet
+│       └── ...
+├── videos/
+│   └── chunk-000/
+│       ├── observation.images.cam_high/
+│       │   ├── episode_000000.mp4
+│       │   └── episode_000001.mp4
+│       └── ...
+├── meta/
+│   ├── info.json                ← 描述数据集结构字段以及整个数据集的版本、统计信息等
+│   ├── tasks.jsonl              ← 描述包含的所有任务的编号和task_instrction字符串
+│   ├── episodes.jsonl           ← 轨迹的开始/结束帧索引（可选）
+│   └── stats.json               ← 全局统计信息（可选）
+└── README.md
 ```
-
-Additionally, if you are using any of the particular policy architecture, pretrained models, or datasets, it is recommended to cite the original authors of the work as they appear below:
-- [SmolVLA](https://arxiv.org/abs/2506.01844)
-```bibtex
-@article{shukor2025smolvla,
-  title={SmolVLA: A Vision-Language-Action Model for Affordable and Efficient Robotics},
-  author={Shukor, Mustafa and Aubakirova, Dana and Capuano, Francesco and Kooijmans, Pepijn and Palma, Steven and Zouitine, Adil and Aractingi, Michel and Pascal, Caroline and Russi, Martino and Marafioti, Andres and Alibert, Simon and Cord, Matthieu and Wolf, Thomas and Cadene, Remi},
-  journal={arXiv preprint arXiv:2506.01844},
-  year={2025}
-}
+### info.json
+info.json 中使用"features"字段描述数据集的结构，其中每一个字段代表数据集的一部分，如动作、腕部图像等
+```bash
+info.json
+├──"codebase_version"                       ← 数据集版本
+├──"..."
+└──"features"                               ← 数据集的结构
+    ├──"observation.images.image"           ← 一般是第三视角图像数据，命名无限制，但必须dtype为image/video
+    │   ├──"dtype"                          ← 图像数据必须为image/video
+    │   ├──"names"                          ← shape的各个维度名称，可用于区分哪一维为channels，以便transfer结果统一
+    │   ├──"shape"
+    │   └──"..."
+    ├──"observation.images.wrist_image"     ← 一般是腕部视角图像数据，命名无限制
+    │   ├──"dtype"
+    │   ├──"names"
+    │   ├──"shape"
+    │   └──"..."
+    ├──"observation.state"                  ← 输入的机器状态信息，如关节向量等，命名必须以obervation开始
+    │   ├──"dtype"
+    │   ├──"names"
+    │   ├──"shape"
+    │   └──"..."
+    ├──"action"                             ← 输出的动作向量，命名必须以action开始
+    │   ├──"dtype"
+    │   ├──"names"
+    │   ├──"shape"
+    │   └──"..."
+    └──"..."
+# 以上规则详细见src/lerobot/datasets/utils/dataset_to_policy_features
 ```
-
-- [Diffusion Policy](https://diffusion-policy.cs.columbia.edu)
-```bibtex
-@article{chi2024diffusionpolicy,
-	author = {Cheng Chi and Zhenjia Xu and Siyuan Feng and Eric Cousineau and Yilun Du and Benjamin Burchfiel and Russ Tedrake and Shuran Song},
-	title ={Diffusion Policy: Visuomotor Policy Learning via Action Diffusion},
-	journal = {The International Journal of Robotics Research},
-	year = {2024},
-}
-```
-- [ACT or ALOHA](https://tonyzhaozh.github.io/aloha)
-```bibtex
-@article{zhao2023learning,
-  title={Learning fine-grained bimanual manipulation with low-cost hardware},
-  author={Zhao, Tony Z and Kumar, Vikash and Levine, Sergey and Finn, Chelsea},
-  journal={arXiv preprint arXiv:2304.13705},
-  year={2023}
-}
-```
-
-- [TDMPC](https://www.nicklashansen.com/td-mpc/)
-
-```bibtex
-@inproceedings{Hansen2022tdmpc,
-	title={Temporal Difference Learning for Model Predictive Control},
-	author={Nicklas Hansen and Xiaolong Wang and Hao Su},
-	booktitle={ICML},
-	year={2022}
-}
-```
-
-- [VQ-BeT](https://sjlee.cc/vq-bet/)
-```bibtex
-@article{lee2024behavior,
-  title={Behavior generation with latent actions},
-  author={Lee, Seungjae and Wang, Yibin and Etukuru, Haritheja and Kim, H Jin and Shafiullah, Nur Muhammad Mahi and Pinto, Lerrel},
-  journal={arXiv preprint arXiv:2403.03181},
-  year={2024}
-}
-```
-
-
-- [HIL-SERL](https://hil-serl.github.io/)
-```bibtex
-@Article{luo2024hilserl,
-title={Precise and Dexterous Robotic Manipulation via Human-in-the-Loop Reinforcement Learning},
-author={Jianlan Luo and Charles Xu and Jeffrey Wu and Sergey Levine},
-year={2024},
-eprint={2410.21845},
-archivePrefix={arXiv},
-primaryClass={cs.RO}
-}
-```
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=huggingface/lerobot&type=Timeline)](https://star-history.com/#huggingface/lerobot&Timeline)
+### tasks.jsonl
+tasks.jsonl 中的每一个任务都必须包含"task_index"和"task"字段
+### episodes.jsonl
+### stats.json

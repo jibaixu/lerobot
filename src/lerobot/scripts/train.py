@@ -53,6 +53,22 @@ from lerobot.utils.utils import (
 from lerobot.utils.wandb_utils import WandBLogger
 
 
+def debug_on():
+    import os
+    import sys
+    os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+    sys.argv = [
+        "src/lerobot/scripts/train.py",
+        "--dataset.repo_id", "MultiTask-v1/panda_wristcam",
+        "--dataset.root", "/data1/jibaixu/datasets/ManiSkill/MultiTask-v1/panda_wristcam",
+        "--policy.type", "diffusion",
+        "--policy.push_to_hub", "False",
+        "--job_name", "panda_wristcam_diffusion",
+        "--output_dir", "outputs/train/panda_diffusion"
+    ]
+debug_on()
+
+
 def update_policy(
     train_metrics: MetricsTracker,
     policy: PreTrainedPolicy,

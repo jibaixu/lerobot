@@ -35,7 +35,7 @@ class DatasetConfig:
     episodes: list[int] | None = None
     image_transforms: ImageTransformsConfig = field(default_factory=ImageTransformsConfig)
     revision: str | None = None
-    use_imagenet_stats: bool = True
+    use_imagenet_stats: bool = True     # 是否使用 ImageNet 数据集的状态信息(mean, std)，会在后续替换数据集实际计算的状态信息
     video_backend: str = field(default_factory=get_safe_default_codec)
 
 

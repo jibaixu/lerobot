@@ -601,7 +601,7 @@ class LeRobotDataset(torch.utils.data.Dataset):
             hf_dataset = load_dataset("parquet", data_files=files, split="train")
 
         # TODO(aliberts): hf_dataset.set_format("torch")
-        hf_dataset.set_transform(hf_transform_to_torch)
+        hf_dataset.set_transform(hf_transform_to_torch)     # set_transform 可以按照不同的框架将数据集转换为对应数据类型，如torch.tensor
         return hf_dataset
 
     def create_hf_dataset(self) -> datasets.Dataset:

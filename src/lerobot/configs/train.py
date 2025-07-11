@@ -61,7 +61,7 @@ class TrainPipelineConfig(HubMixin):
     use_policy_training_preset: bool = True
     optimizer: OptimizerConfig | None = None
     scheduler: LRSchedulerConfig | None = None
-    eval: EvalConfig = field(default_factory=EvalConfig)
+    eval: EvalConfig = field(default_factory=EvalConfig)    # field用于dataclass中定义默认值，此时eval一定不为None
     wandb: WandBConfig = field(default_factory=WandBConfig)
 
     def __post_init__(self):

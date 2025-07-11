@@ -61,7 +61,7 @@ def debug_on():
         "src/lerobot/scripts/train.py",
         "--dataset.repo_id", "MultiTask-v1/panda_wristcam",
         "--dataset.root", "/data1/jibaixu/datasets/ManiSkill/MultiTask-v1/panda_wristcam",
-        "--policy.type", "diffusion",
+        "--policy.type", "diffusion",       # .type 属性将会引发 draccus 的插件发现机制
         "--policy.push_to_hub", "False",
         "--job_name", "panda_wristcam_diffusion",
         "--output_dir", "outputs/train/panda_diffusion"
@@ -83,7 +83,7 @@ def update_policy(
     start_time = time.perf_counter()
     device = get_device_from_parameters(policy)
     policy.train()
-    with torch.autocast(device_type=device.type) if use_amp else nullcontext():
+    with torch.autocast(device_type=device.type) if use_amp else nullcontext():     # torch.autocast 创建一个上下文管理器，计算过程中自动混合精度
         loss, output_dict = policy.forward(batch)
         # TODO(rcadene): policy.unnormalize_outputs(out_dict)
     grad_scaler.scale(loss).backward()
@@ -121,9 +121,9 @@ def update_policy(
     return train_metrics, output_dict
 
 
-@parser.wrap()
+@parser.wrap()          # 功能类似 draccus.wrap ，作为装饰器在函数调用前自动完成参数解析和配置加载，同时添加了一些自定义行为
 def train(cfg: TrainPipelineConfig):
-    cfg.validate()
+    cfg.validate()      # 检查配置有效性，同时对于None类型的配置项会设置默认值，如优化器和调度器的配置类
     logging.info(pformat(cfg.to_dict()))
 
     if cfg.wandb.enable and cfg.wandb.project:
@@ -159,7 +159,7 @@ def train(cfg: TrainPipelineConfig):
 
     logging.info("Creating optimizer and scheduler")
     optimizer, lr_scheduler = make_optimizer_and_scheduler(cfg, policy)
-    grad_scaler = GradScaler(device.type, enabled=cfg.policy.use_amp)
+    grad_scaler = GradScaler(device.type, enabled=cfg.policy.use_amp)   # 用于自动混合精度训练，设置enabled为False，后续仍会使用但不起作用
 
     step = 0  # number of policy updates (forward + backward + optim)
 
@@ -181,7 +181,7 @@ def train(cfg: TrainPipelineConfig):
     # create dataloader for offline training
     if hasattr(cfg.policy, "drop_n_last_frames"):
         shuffle = False
-        sampler = EpisodeAwareSampler(
+        sampler = EpisodeAwareSampler(      #! 定义的 dataloader 的采样器。进行边界帧的丢弃，同时作为一个可迭代器随机返回一个 episode_index
             dataset.episode_data_index,
             drop_n_last_frames=cfg.policy.drop_n_last_frames,
             shuffle=True,
@@ -218,8 +218,8 @@ def train(cfg: TrainPipelineConfig):
     logging.info("Start offline training on a fixed dataset")
     for _ in range(step, cfg.steps):
         start_time = time.perf_counter()
-        batch = next(dl_iter)
-        train_tracker.dataloading_s = time.perf_counter() - start_time
+        batch = next(dl_iter)   # dl_iter 是一个无限循环的迭代器，通过 cycle 包裹的 dataloader
+        train_tracker.dataloading_s = time.perf_counter() - start_time  #! train_tracker 中重写了 __setattr__ 方法，自动调用 AverageMeter.update
 
         for key in batch:
             if isinstance(batch[key], torch.Tensor):
@@ -258,7 +258,7 @@ def train(cfg: TrainPipelineConfig):
             checkpoint_dir = get_step_checkpoint_dir(cfg.output_dir, cfg.steps, step)
             save_checkpoint(checkpoint_dir, step, cfg, policy, optimizer, lr_scheduler)
             update_last_checkpoint(checkpoint_dir)
-            if wandb_logger:
+            if wandb_logger:    # wandb远程存储checkpoints，由cfg.wandb.disable_artifact决定是否上传
                 wandb_logger.log_policy(checkpoint_dir)
 
         if cfg.env and is_eval_step:

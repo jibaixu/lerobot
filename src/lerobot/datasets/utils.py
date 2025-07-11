@@ -634,10 +634,12 @@ def cycle(iterable):
     """The equivalent of itertools.cycle, but safe for Pytorch dataloaders.
 
     See https://github.com/pytorch/pytorch/issues/23900 for information on why itertools.cycle is not safe.
+    
+    itertools.cycle 存在内存泄漏的问题，因此重新实现了一个安全的循环迭代器
     """
     iterator = iter(iterable)
-    while True:
-        try:
+    while True:     #! cycle()方法通过while循环和StopIteration异常实现无限循环
+        try:        #! while循环会一直将迭代器中的元素取出并加载生成器中，同时当耗尽时通过异常重新创建迭代器
             yield next(iterator)
         except StopIteration:
             iterator = iter(iterable)

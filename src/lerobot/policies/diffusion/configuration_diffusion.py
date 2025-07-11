@@ -104,9 +104,12 @@ class DiffusionConfig(PreTrainedConfig):
     """
 
     # Inputs / output structure.
+    #! Arg: n_obs_steps 可以观测历史的环境状态步数，t时间步时，obs[t-n+1], ..., obs[t-1], obs[t]
+    #! n_obs_steps=2: datasets[0]['observation.images.image'].shape==[2, channel, H, W]
+    #! n_obs_steps=1: datasets[0]['observation.images.image'].shape==[channel, H, W]
     n_obs_steps: int = 2
-    horizon: int = 16
-    n_action_steps: int = 8
+    horizon: int = 16           #! 预测的总动作步数
+    n_action_steps: int = 8     #! 实际执行的动作步数
 
     normalization_mapping: dict[str, NormalizationMode] = field(
         default_factory=lambda: {

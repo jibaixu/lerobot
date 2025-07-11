@@ -329,7 +329,7 @@ class DiffusionModel(nn.Module):
         global_cond = self._prepare_global_conditioning(batch)  # (B, global_cond_dim)
 
         # Forward diffusion.
-        trajectory = batch["action"]
+        trajectory = batch["action"]    #! trajectory[B, horizon, action_dim]
         # Sample noise to add to the trajectory.
         eps = torch.randn(trajectory.shape, device=trajectory.device)
         # Sample a random noising timestep for each item in the batch.
@@ -343,6 +343,7 @@ class DiffusionModel(nn.Module):
         noisy_trajectory = self.noise_scheduler.add_noise(trajectory, eps, timesteps)
 
         # Run the denoising network (that might denoise the trajectory, or attempt to predict the noise).
+        #! unet网络的输入是带有噪声的动作轨迹，预测的是噪声，而不是动作；动作需要通过 schedule 去噪
         pred = self.unet(noisy_trajectory, timesteps, global_cond=global_cond)
 
         # Compute the loss.

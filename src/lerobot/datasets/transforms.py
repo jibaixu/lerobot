@@ -177,7 +177,7 @@ class ImageTransformsConfig:
     # Set this to True to apply them in a random order.
     random_order: bool = False
     tfs: dict[str, ImageTransformConfig] = field(
-        default_factory=lambda: {
+        default_factory=lambda: {   #! tfs参数为字典，可变类型，因此需要考虑深浅拷贝问题，采用lambda匿名参数初始化
             "brightness": ImageTransformConfig(
                 weight=1.0,
                 type="ColorJitter",

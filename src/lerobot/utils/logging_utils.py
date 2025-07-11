@@ -81,18 +81,18 @@ class MetricsTracker:
         "_avg_samples_per_ep",
         "metrics",
         "steps",
-        "samples",
-        "episodes",
-        "epochs",
+        "samples",      # 【整个训练过程模型看到的帧数量】samples = steps * batch_size, 模型看到的样本/帧的总数量。
+        "episodes",     # 【整个训练过程模型看到的轨迹数量】episodes = samples / avg_samples_per_ep, 通过看到的总样本数量和平均每个轨迹的样本数量计算
+        "epochs",       # 【整个训练过程数据集输入的的epoch数】epochs = samples / num_frames, 通过看到的总帧数计算
     ]
 
     def __init__(
         self,
-        batch_size: int,
-        num_frames: int,
-        num_episodes: int,
+        batch_size: int,    # 每个批量中 sample 的数量，一个样本就是一帧 frame
+        num_frames: int,    # 数据集中的全部帧数量
+        num_episodes: int,  # 数据集中的全部轨迹数量
         metrics: dict[str, AverageMeter],
-        initial_step: int = 0,
+        initial_step: int = 0,  # 初始步数 (训练过程不再按照epoch计算，而是按照step计算。事先限定总步数，通过计算得到的epoch仅仅作为可视化)
     ):
         self.__dict__.update(dict.fromkeys(self.__keys__))
         self._batch_size = batch_size

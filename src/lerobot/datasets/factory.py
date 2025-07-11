@@ -78,7 +78,7 @@ def make_dataset(cfg: TrainPipelineConfig) -> LeRobotDataset | MultiLeRobotDatas
     Returns:
         LeRobotDataset | MultiLeRobotDataset
     """
-    image_transforms = (
+    image_transforms = (    # 基于 torchvision.transforms.v2 实现
         ImageTransforms(cfg.dataset.image_transforms) if cfg.dataset.image_transforms.enable else None
     )
 
@@ -110,7 +110,7 @@ def make_dataset(cfg: TrainPipelineConfig) -> LeRobotDataset | MultiLeRobotDatas
             f"{pformat(dataset.repo_id_to_index, indent=2)}"
         )
 
-    if cfg.dataset.use_imagenet_stats:
+    if cfg.dataset.use_imagenet_stats:      # 是否使用 ImageNet 数据集的状态信息(mean, std)，有助于数据集的标准化处理
         for key in dataset.meta.camera_keys:
             for stats_type, stats in IMAGENET_STATS.items():
                 dataset.meta.stats[key][stats_type] = torch.tensor(stats, dtype=torch.float32)

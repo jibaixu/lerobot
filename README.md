@@ -42,6 +42,9 @@ Install 🤗 LeRobot:
 ```bash
 # pyproject.toml中会安装最新的torch，可以注释掉dependencies中的torch/torchvision，手动安装
 # conda install pytorch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 pytorch-cuda=12.4 -c pytorch -c nvidia
+
+#! 若要兼容 ManiSkill 项目，需要修改 pyproject.toml 中 return-sdk 的版本限制 "rerun-sdk>=0.21,<0.23"
+#! 因为0.23版本不支持numpy1.x，这与ManiSkill中的numpy版本要求冲突
 pip install -e .
 ```
 
@@ -168,8 +171,6 @@ Check out [example 3](./examples/3_train_policy.py) that illustrates how to trai
 To use wandb for logging training and evaluation curves, make sure you've run `wandb login` as a one-time setup step. Then, when running the training command above, enable WandB in the configuration by adding `--wandb.enable=true`.
 
 A link to the wandb logs for the run will also show up in yellow in your terminal. Here is an example of what they look like in your browser. Please also check [here](./examples/4_train_policy_with_script.md#typical-logs-and-metrics) for the explanation of some commonly used metrics in logs.
-
-![](media/wandb.png)
 
 Note: For efficiency, during training every checkpoint is evaluated on a low number of episodes. You may use `--eval.n_episodes=500` to evaluate on more episodes than the default. Or, after training, you may want to re-evaluate your best checkpoints on more episodes or change the evaluation settings. See `python -m lerobot.scripts.eval --help` for more instructions.
 

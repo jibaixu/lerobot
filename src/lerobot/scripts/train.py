@@ -56,15 +56,15 @@ from lerobot.utils.wandb_utils import WandBLogger
 def debug_on():
     import os
     import sys
-    os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "5"
     sys.argv = [
         "src/lerobot/scripts/train.py",
-        "--dataset.repo_id", "MultiTask-v1/panda_wristcam",
-        "--dataset.root", "/data1/jibaixu/datasets/ManiSkill/MultiTask-v1/panda_wristcam",
+        "--dataset.repo_id", "AllTasks-v2/panda_wristcam",
+        "--dataset.root", "/data1/jibaixu/datasets/ManiSkill/AllTasks-v2/panda_wristcam",
         "--policy.type", "diffusion",       # .type 属性将会引发 draccus 的插件发现机制
         "--policy.push_to_hub", "False",
         "--job_name", "panda_wristcam_diffusion",
-        "--output_dir", "outputs/train/panda_diffusion"
+        "--output_dir", "/data1/jibaixu/checkpoints/AllTasks-v2/panda_diffusion"
     ]
 debug_on()
 

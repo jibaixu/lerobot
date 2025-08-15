@@ -53,20 +53,32 @@ from lerobot.utils.utils import (
 from lerobot.utils.wandb_utils import WandBLogger
 
 
+TASK = "PullCubeTool-v1"
+TASK_EPISODE_MAP = {
+    "PickCube-v1": list(range(0, 100)),
+    "PushCube-v1": list(range(100, 200)),
+    "StackCube-v1": list(range(200, 300)),
+    "PullCube-v1": list(range(300, 400)),
+    "PullCubeTool-v1": list(range(400, 500)),
+    "PlaceSphere-v1": list(range(500, 600)),
+    "LiftPegUpright-v1": list(range(600, 700)),
+}
+
+
 def debug_on():
     import os
     import sys
     os.environ["CUDA_VISIBLE_DEVICES"] = "5"
     sys.argv = [
         "src/lerobot/scripts/train.py",
-        "--dataset.repo_id", "AllTasks-v2/panda_wristcam",
-        "--dataset.root", "/data1/jibaixu/datasets/ManiSkill/AllTasks-v2/panda_wristcam",
+        "--dataset.repo_id", "AllTasks-v3/panda_wristcam",
+        "--dataset.root", "/data1/jibaixu/datasets/Boundless/lerobot/panda_wristcam",
         "--policy.type", "diffusion",       # .type 属性将会引发 draccus 的插件发现机制
         "--policy.push_to_hub", "False",
         "--job_name", "panda_wristcam_diffusion",
         "--output_dir", "/data1/jibaixu/checkpoints/AllTasks-v2/panda_diffusion"
     ]
-debug_on()
+# debug_on()
 
 
 def update_policy(
@@ -177,12 +189,14 @@ def train(cfg: TrainPipelineConfig):
     logging.info(f"{dataset.num_episodes=}")
     logging.info(f"{num_learnable_params=} ({format_big_number(num_learnable_params)})")
     logging.info(f"{num_total_params=} ({format_big_number(num_total_params)})")
+    logging.info(f"single_task={colored(TASK, 'yellow', attrs=['bold'])}")
 
     # create dataloader for offline training
     if hasattr(cfg.policy, "drop_n_last_frames"):
         shuffle = False
         sampler = EpisodeAwareSampler(      #! 定义的 dataloader 的采样器。进行边界帧的丢弃，同时作为一个可迭代器随机返回一个 episode_index
             dataset.episode_data_index,
+            episode_indices_to_use=TASK_EPISODE_MAP[TASK] if TASK else None,
             drop_n_last_frames=cfg.policy.drop_n_last_frames,
             shuffle=True,
         )

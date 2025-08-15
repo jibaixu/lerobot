@@ -1,28 +1,25 @@
 #!/bin/bash
 
 # 设置 CUDA_VISIBLE_DEVICES 环境变量
-export CUDA_VISIBLE_DEVICES=5
+export CUDA_VISIBLE_DEVICES=3
 
-# 设置训练步数
-batch_size=16
-steps=200_000
-save_freq=50_000
+# 设置本体类型和子任务
+robot="panda_wristcam" # [panda_wristcam, widowxai_wristcam, xarm6_robotiq_wristcam, xarm7_robotiq_wristcam]
+task="PullCubeTool-v1" # [PickCube-v1, PushCube-v1, StackCube-v1, PullCube-v1, PullCubeTool-v1, PlaceSphere-v1, LiftPegUpright-v1]
 
 # 设置采取的策略网络
 policy_type="diffusion"
-# policy_type="act"
+
+# 设置训练步数
+batch_size=64
+steps=200_000
+save_freq=20_000
 
 # panda_wristcam数据集
-repo_id="AllTasks-v2/panda_wristcam"
-root_dir="/data1/jibaixu/datasets/ManiSkill/AllTasks-v2/panda_wristcam"
-job_name="panda_wristcam_${policy_type}_${steps}_steps_b${batch_size}"
-output_dir="/data1/jibaixu/checkpoints/AllTasks-v2/panda_wristcam_${policy_type}_${steps}_steps_b${batch_size}"
-
-# xarm6_robotiq_wristcam数据集
-# repo_id="AllTasks-v2/xarm6_robotiq_wristcam"
-# root_dir="/data1/jibaixu/datasets/ManiSkill/AllTasks-v2/xarm6_robotiq_wristcam"
-# job_name="xarm6_robotiq_wristcam_${policy_type}_${steps}_steps_b${batch_size}"
-# output_dir="/data1/jibaixu/checkpoints/AllTasks-v2/xarm6_robotiq_wristcam_${policy_type}_${steps}_steps_b${batch_size}"
+repo_id="AllTasks-v3/${robot}"
+root_dir="/data1/jibaixu/datasets/Boundless/lerobot/${robot}"
+job_name="${robot}_${task}_${policy_type}_${steps}_steps_b${batch_size}"
+output_dir="/data1/jibaixu/checkpoints/AllTasks-v3/${job_name}"
 
 # 运行训练脚本
 # Args:
@@ -37,7 +34,7 @@ python -m lerobot.scripts.train \
     --steps=$steps \
     --save_freq=$save_freq \
     --wandb.enable=True \
-    --wandb.project="AllTasks-v2" \
+    --wandb.project="AllTasks-v3" \
     --wandb.disable_artifact=True \
     --job_name="$job_name" \
     --output_dir="$output_dir"

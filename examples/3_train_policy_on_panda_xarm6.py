@@ -53,7 +53,7 @@ def main():
     #   - input/output shapes: to properly size the policy
     #   - dataset stats: for normalization and denormalization of input/outputs
     # dataset_metadata = LeRobotDatasetMetadata("lerobot/pusht")
-    dataset_metadata = LeRobotDatasetMetadata("/data1/jibaixu/datasets/ManiSkill/AllTasks-v2/panda_wristcam")
+    dataset_metadata = LeRobotDatasetMetadata("/data1/jibaixu/datasets/Boundless/lerobot/panda_wristcam")
     features = dataset_to_policy_features(dataset_metadata.features)
     output_features = {key: ft for key, ft in features.items() if ft.type is FeatureType.ACTION}
     input_features = {key: ft for key, ft in features.items() if key not in output_features}
@@ -91,7 +91,7 @@ def main():
     # We can then instantiate the dataset with these delta_timestamps configuration.
     # dataset = LeRobotDataset("lerobot/pusht", delta_timestamps=delta_timestamps)
     dataset = LeRobotDataset(
-        "/data1/jibaixu/datasets/ManiSkill/MultiTask-v1/panda_wristcam",
+        "/data1/jibaixu/datasets/Boundless/lerobot/panda_wristcam",
         delta_timestamps=delta_timestamps
     )
 

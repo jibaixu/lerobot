@@ -26,18 +26,11 @@ from lerobot.policies.diffusion.modeling_diffusion import DiffusionPolicy
 from lerobot.policies.act.modeling_act import ACTPolicy
 
 
-os.environ['CUDA_VISIBLE_DEVICES'] = "4"
+os.environ['CUDA_VISIBLE_DEVICES'] = "3"
 
-ROBOT = "xarm6" # ["panda", "widowxai", "xarm6", "xarm7"]
-TASK = "PickCube-v1" # ["StackCube-v1", "PullCubeTool-v1", "PlaceSphere-v1"]
+TASK = "PlaceSphere-v1" # ["StackCube-v1", "PullCubeTool-v1", "PlaceSphere-v1"]
 
 BENCHMARK_ENVS = ["PickCube-v1", "PushCube-v1", "StackCube-v1", "PullCube-v1", "PullCubeTool-v1", "PlaceSphere-v1", "LiftPegUpright-v1",]
-ROBOT_UIDS_MAP = {
-    "panda": "panda_wristcam",
-    "widowxai": "widowxai_wristcam",
-    "xarm6": "xarm6_robotiq_wristcam",
-    "xarm7": "xarm7_robotiq_wristcam",
-}
 ENV_MAXSTEP_MAP = {
     "PickCube-v1": 500,
     "PushCube-v1": 500,
@@ -70,12 +63,12 @@ def _quat2axisangle(quat):
 @dataclass
 class EvalConfig:
     # TODO
-    pretrained_policy_path = "/data1/jibaixu/checkpoints/AllTasks-v2/panda_wristcam_diffusion_200_000_steps_b64/checkpoints/100000/pretrained_model"
+    pretrained_policy_path = "outputs/train/AllTasks-v3/widowxai_wristcam_PlaceSphere-v1_diffusion_200_000_steps_b64"
     resize_size: int = 224
     replan_steps: int = 5
     """Environment ID"""
     # TODO
-    robot_uids = "panda_wristcam"   # ["panda_wristcam", "xarm6_robotiq_wristcam"]
+    robot_uids = "widowxai_wristcam"   # ["panda_wristcam", "widowxai_wristcam", "xarm6_robotiq_wristcam", "xarm7_robotiq_wristcam"]
     obs_mode: Annotated[str, tyro.conf.arg(aliases=["-o"])] = "rgb"
     control_mode: Annotated[str, tyro.conf.arg(aliases=["-c"])] = "pd_ee_delta_pose"
     num_envs: Annotated[int, tyro.conf.arg(aliases=["-n"])] = 1
@@ -98,7 +91,7 @@ class EvalConfig:
     save_results: Optional[str] = None
     """Path to save results to. Should be path/to/results.csv"""
     # TODO
-    save_path: str = "/home/jibaixu/projects/lerobot/outputs/eval/panda_wristcam_diffusion_100_000_steps_b64"
+    save_path: str = "outputs/eval/AllTasks-v3/widowxai_wristcam_LiftPegUpright-v1_diffusion_200_000_steps_b64"
     shader: str = "default"
     num_per_task: int = 50
 

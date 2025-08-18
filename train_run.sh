@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # 设置 CUDA_VISIBLE_DEVICES 环境变量
-export CUDA_VISIBLE_DEVICES=3
+export CUDA_VISIBLE_DEVICES=2
 
 # 设置本体类型和子任务
-robot="panda_wristcam" # [panda_wristcam, widowxai_wristcam, xarm6_robotiq_wristcam, xarm7_robotiq_wristcam]
+robot="xarm7_robotiq_wristcam" # [panda_wristcam, widowxai_wristcam, xarm6_robotiq_wristcam, xarm7_robotiq_wristcam]
 task="PullCubeTool-v1" # [PickCube-v1, PushCube-v1, StackCube-v1, PullCube-v1, PullCubeTool-v1, PlaceSphere-v1, LiftPegUpright-v1]
 
 # 设置采取的策略网络
@@ -17,9 +17,9 @@ save_freq=20_000
 
 # panda_wristcam数据集
 repo_id="AllTasks-v3/${robot}"
-root_dir="/data1/jibaixu/datasets/Boundless/lerobot/${robot}"
+root_dir="/data2/wts/jibaixu/lerobot/data/AllTasks-v3/${robot}"
 job_name="${robot}_${task}_${policy_type}_${steps}_steps_b${batch_size}"
-output_dir="/data1/jibaixu/checkpoints/AllTasks-v3/${job_name}"
+output_dir="outputs/train/AllTasks-v3/${job_name}"
 
 # 运行训练脚本
 # Args:
@@ -35,6 +35,7 @@ python -m lerobot.scripts.train \
     --save_freq=$save_freq \
     --wandb.enable=True \
     --wandb.project="AllTasks-v3" \
+    --wandb.mode="offline" \
     --wandb.disable_artifact=True \
     --job_name="$job_name" \
     --output_dir="$output_dir"

@@ -28,8 +28,25 @@ from lerobot.policies.act.modeling_act import ACTPolicy
 
 os.environ['CUDA_VISIBLE_DEVICES'] = "4"
 
-BENCHMARK_ENVS = ["PickCube-v1", "PushCube-v1", "StackCube-v1", "PullCube-v1",]
-INDEX = 3
+ROBOT = "xarm6" # ["panda", "widowxai", "xarm6", "xarm7"]
+TASK = "PickCube-v1" # ["StackCube-v1", "PullCubeTool-v1", "PlaceSphere-v1"]
+
+BENCHMARK_ENVS = ["PickCube-v1", "PushCube-v1", "StackCube-v1", "PullCube-v1", "PullCubeTool-v1", "PlaceSphere-v1", "LiftPegUpright-v1",]
+ROBOT_UIDS_MAP = {
+    "panda": "panda_wristcam",
+    "widowxai": "widowxai_wristcam",
+    "xarm6": "xarm6_robotiq_wristcam",
+    "xarm7": "xarm7_robotiq_wristcam",
+}
+ENV_MAXSTEP_MAP = {
+    "PickCube-v1": 500,
+    "PushCube-v1": 500,
+    "StackCube-v1": 500,
+    "PullCube-v1": 500,
+    "PullCubeTool-v1": 800,
+    "PlaceSphere-v1": 500,
+    "LiftPegUpright-v1": 700,
+}
 
 
 def _quat2axisangle(quat):
@@ -56,7 +73,6 @@ class EvalConfig:
     pretrained_policy_path = "/data1/jibaixu/checkpoints/AllTasks-v2/panda_wristcam_diffusion_200_000_steps_b64/checkpoints/100000/pretrained_model"
     resize_size: int = 224
     replan_steps: int = 5
-    # env_id: Annotated[str, tyro.conf.arg(aliases=["-e"])] = BENCHMARK_ENVS[INDEX]
     """Environment ID"""
     # TODO
     robot_uids = "panda_wristcam"   # ["panda_wristcam", "xarm6_robotiq_wristcam"]
@@ -85,10 +101,11 @@ class EvalConfig:
     save_path: str = "/home/jibaixu/projects/lerobot/outputs/eval/panda_wristcam_diffusion_100_000_steps_b64"
     shader: str = "default"
     num_per_task: int = 50
-    max_step_length: int = 500
 
 
 def main(args: EvalConfig):
+    assert args.cpu_sim, "CPU simulation is required for evaluation."
+
     os.makedirs(args.save_path, exist_ok=True)
     profiler = Profiler(output_format="stdout")
     num_envs = args.num_envs
@@ -109,29 +126,18 @@ def main(args: EvalConfig):
     success_dict = {
         "pretrained_policy_path": args.pretrained_policy_path,
         "num_per_task": args.num_per_task,
-        "max_step_length": args.max_step_length,
         "env_success_rate": {},
         "total_success_rate": 0.0,
     }
-    for env_id in BENCHMARK_ENVS:
-        if not args.cpu_sim:
-            env = gym.make(
-                env_id,
-                num_envs=num_envs,
-                obs_mode=args.obs_mode,
-                robot_uids=args.robot_uids,
-                sensor_configs=dict(shader_pack=args.shader),
-                human_render_camera_configs=dict(shader_pack=args.shader),
-                viewer_camera_configs=dict(shader_pack=args.shader),
-                render_mode=args.render_mode,
-                control_mode=args.control_mode,
-                sim_config=sim_config,
-                **kwargs
-            )
-            if isinstance(env.action_space, gym.spaces.Dict):
-                env = FlattenActionSpaceWrapper(env)
-            base_env: BaseEnv = env.unwrapped
-        else:
+
+    # 根据task参数决定评估哪些任务
+    if TASK:
+        eval_envs = [TASK]
+    else:
+        eval_envs = BENCHMARK_ENVS
+
+    for env_id in eval_envs:
+        if args.cpu_sim:
             def make_env():
                 def _init():
                     env = gym.make(env_id,
@@ -164,21 +170,10 @@ def main(args: EvalConfig):
                 if args.save_video:
                     images.append(np.expand_dims(env.render(), axis=0)) if args.cpu_sim else images.append(env.render().cpu().numpy())
                     # images.append(obs["sensor_data"]["third_view_camera"]["rgb"].cpu().numpy())
-                if env_id == "PickCube-v1":
-                    task_description = "Pick up the cube."
-                    step_length = args.max_step_length
-                elif env_id == "PushCube-v1":
-                    task_description = "Push the cube to the target position."
-                    step_length = args.max_step_length
-                elif env_id == "StackCube-v1":
-                    task_description = "Stack the cube on top of the other cube."
-                    step_length = args.max_step_length
-                else:
-                    task_description = "Pull the cube to the target position."
-                    step_length = args.max_step_length
-                # N = step_length // args.replan_steps
+
+                step_length = ENV_MAXSTEP_MAP[env_id]
                 N = step_length     # LeRobot 中的 policy 内部维护的 queue 队列会自己完成 replan
-                # N = 100
+
                 with profiler.profile("env.step", total_steps=N, num_envs=num_envs):
                     for i in range(N):
                         if args.cpu_sim:
@@ -220,29 +215,12 @@ def main(args: EvalConfig):
                                 "observation.images.wrist_image": wrist_img,
                                 "observation.state": state,
                             }
-                        else:
-                            #TODO: no changing to adjust dp or act with gpu_sim
-                            img = np.ascontiguousarray(obs["sensor_data"]["third_view_camera"]["rgb"].cpu().numpy())
-                            wrist_img = np.ascontiguousarray(obs["sensor_data"]["hand_camera"]["rgb"].cpu().numpy())
-                            element = {
-                                    "observation.images.image": img,
-                                    "observation.images.wrist_image": wrist_img,
-                                    "observation.state": np.expand_dims(
-                                        np.concatenate(
-                                                (
-                                                    obs["extra"]["tcp_pose"][0],
-                                                    obs["agent"]["qpos"][0, -1:],
-                                                )
-                                            ),
-                                        axis=0,
-                                    ),
-                                    # "annotation.human.task_description": [task_description],
-                            }
 
                         action = policy.select_action(element)
-                        # action[action[:, -1] == 0, -1] = -1   # 训练时输入的 action 最后一维就是 1 或 -1
-                        # pred_action = pred_action[:args.replan_steps]
                         numpy_action = action.squeeze(0).to("cpu").numpy()
+
+                        if ROBOT == "widowxai":     # widowxai 本体在训练时动作维是7，但在评估时模拟环境中需要8维
+                            numpy_action = np.append(numpy_action, numpy_action[-1])
 
                         obs, rew, terminated, truncated, info = env.step(numpy_action)
                         if args.save_video:
@@ -269,8 +247,9 @@ def main(args: EvalConfig):
         env.close()
         print(f"Task Success Rate: {task_successes / args.num_per_task}")
         success_dict["env_success_rate"][env_id] = task_successes / args.num_per_task
-    print(f"Total Success Rate: {total_successes / (args.num_per_task * len(BENCHMARK_ENVS))}")
-    success_dict['total_success_rate'] = total_successes / (args.num_per_task * len(BENCHMARK_ENVS))
+
+    print(f"Total Success Rate: {total_successes / (args.num_per_task * len(eval_envs))}")
+    success_dict['total_success_rate'] = total_successes / (args.num_per_task * len(eval_envs))
     with open(f"{args.save_path}/success_dict.json", "w") as f:
         json.dump(success_dict, f)
     

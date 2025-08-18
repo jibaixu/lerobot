@@ -53,7 +53,6 @@ from lerobot.utils.utils import (
 from lerobot.utils.wandb_utils import WandBLogger
 
 
-TASK = "PullCubeTool-v1"
 TASK_EPISODE_MAP = {
     "PickCube-v1": list(range(0, 100)),
     "PushCube-v1": list(range(100, 200)),
@@ -64,19 +63,33 @@ TASK_EPISODE_MAP = {
     "LiftPegUpright-v1": list(range(600, 700)),
 }
 
+def extract_task_from_job_name(job_name):
+    """从job_name中提取任务名称
+    job_name格式: {robot}_{task}_{policy_type}_{steps}_steps_b{batch_size}
+    例如: widowxai_wristcam_PickCube-v1_diffusion_200_000_steps_b64
+    """
+    if not job_name:
+        return None
+    
+    parts = job_name.split('_')
+    for i, part in enumerate(parts):
+        if part.endswith('-v1'):
+            return part
+    return None
+
 
 def debug_on():
     import os
     import sys
-    os.environ["CUDA_VISIBLE_DEVICES"] = "5"
+    # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     sys.argv = [
         "src/lerobot/scripts/train.py",
         "--dataset.repo_id", "AllTasks-v3/panda_wristcam",
-        "--dataset.root", "/data1/jibaixu/datasets/Boundless/lerobot/panda_wristcam",
+        "--dataset.root", "/data2/wts/jibaixu/lerobot/data/AllTasks-v3/panda_wristcam",
         "--policy.type", "diffusion",       # .type 属性将会引发 draccus 的插件发现机制
         "--policy.push_to_hub", "False",
         "--job_name", "panda_wristcam_diffusion",
-        "--output_dir", "/data1/jibaixu/checkpoints/AllTasks-v2/panda_diffusion"
+        "--output_dir", "outputs/train/panda_diffusion"
     ]
 # debug_on()
 
@@ -187,16 +200,19 @@ def train(cfg: TrainPipelineConfig):
     logging.info(f"{cfg.steps=} ({format_big_number(cfg.steps)})")
     logging.info(f"{dataset.num_frames=} ({format_big_number(dataset.num_frames)})")
     logging.info(f"{dataset.num_episodes=}")
+    # 从job_name中提取当前要训练的任务
+    current_task = extract_task_from_job_name(cfg.job_name)
+    
     logging.info(f"{num_learnable_params=} ({format_big_number(num_learnable_params)})")
     logging.info(f"{num_total_params=} ({format_big_number(num_total_params)})")
-    logging.info(f"single_task={colored(TASK, 'yellow', attrs=['bold'])}")
+    logging.info(f"single_task={colored(current_task or 'ALL_TASKS', 'yellow', attrs=['bold'])}")
 
     # create dataloader for offline training
     if hasattr(cfg.policy, "drop_n_last_frames"):
         shuffle = False
         sampler = EpisodeAwareSampler(      #! 定义的 dataloader 的采样器。进行边界帧的丢弃，同时作为一个可迭代器随机返回一个 episode_index
             dataset.episode_data_index,
-            episode_indices_to_use=TASK_EPISODE_MAP[TASK] if TASK else None,
+            episode_indices_to_use=TASK_EPISODE_MAP[current_task] if current_task and current_task in TASK_EPISODE_MAP else None,
             drop_n_last_frames=cfg.policy.drop_n_last_frames,
             shuffle=True,
         )

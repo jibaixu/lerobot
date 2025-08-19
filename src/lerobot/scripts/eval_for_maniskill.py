@@ -13,11 +13,8 @@ import math
 import json
 import os
 
-import mani_skill.envs
-from mani_skill.envs.sapien_env import BaseEnv
 from mani_skill.examples.benchmarking.profiling import Profiler
 from mani_skill.utils.visualization.misc import images_to_video, tile_images
-from mani_skill.utils.wrappers.flatten import FlattenActionSpaceWrapper
 import mani_skill.examples.benchmarking.envs
 from mani_skill.utils.wrappers.gymnasium import CPUGymWrapper # import benchmark env code
 from gymnasium.vector.async_vector_env import AsyncVectorEnv
@@ -26,10 +23,7 @@ from lerobot.policies.diffusion.modeling_diffusion import DiffusionPolicy
 from lerobot.policies.act.modeling_act import ACTPolicy
 
 
-os.environ['CUDA_VISIBLE_DEVICES'] = "3"
-
-TASK = "PlaceSphere-v1" # ["StackCube-v1", "PullCubeTool-v1", "PlaceSphere-v1"]
-
+BENCHMARK_ROBOTS = ["panda_wristcam", "widowxai_wristcam", "xarm6_robotiq_wristcam", "xarm7_robotiq_wristcam"]
 BENCHMARK_ENVS = ["PickCube-v1", "PushCube-v1", "StackCube-v1", "PullCube-v1", "PullCubeTool-v1", "PlaceSphere-v1", "LiftPegUpright-v1",]
 ENV_MAXSTEP_MAP = {
     "PickCube-v1": 500,
@@ -62,13 +56,12 @@ def _quat2axisangle(quat):
 
 @dataclass
 class EvalConfig:
-    # TODO
-    pretrained_policy_path = "outputs/train/AllTasks-v3/widowxai_wristcam_PlaceSphere-v1_diffusion_200_000_steps_b64"
+    pretrained_policy_path: str = "/home/jibaixu/projects/lerobot/outputs/train/panda_diffusion_pullcube/checkpoints/020000/pretrained_model"
     resize_size: int = 224
     replan_steps: int = 5
     """Environment ID"""
-    # TODO
-    robot_uids = "widowxai_wristcam"   # ["panda_wristcam", "widowxai_wristcam", "xarm6_robotiq_wristcam", "xarm7_robotiq_wristcam"]
+    robot_uids: str = "panda_wristcam"   # ["panda_wristcam", "widowxai_wristcam", "xarm6_robotiq_wristcam", "xarm7_robotiq_wristcam"]
+    env_uids: str = "PullCubeTool-v1"    # ["PickCube-v1", "PushCube-v1", "StackCube-v1", "PullCube-v1", "PullCubeTool-v1", "PlaceSphere-v1", "LiftPegUpright-v1"]
     obs_mode: Annotated[str, tyro.conf.arg(aliases=["-o"])] = "rgb"
     control_mode: Annotated[str, tyro.conf.arg(aliases=["-c"])] = "pd_ee_delta_pose"
     num_envs: Annotated[int, tyro.conf.arg(aliases=["-n"])] = 1
@@ -90,15 +83,17 @@ class EvalConfig:
     """Whether to save videos"""
     save_results: Optional[str] = None
     """Path to save results to. Should be path/to/results.csv"""
-    # TODO
-    save_path: str = "outputs/eval/AllTasks-v3/widowxai_wristcam_LiftPegUpright-v1_diffusion_200_000_steps_b64"
+    save_path: str = "outputs/eval/AllTasks-v3/panda_wristcam_pullcubetool-v1"
     shader: str = "default"
     num_per_task: int = 50
 
+    def __post_init__(self):
+        assert self.robot_uids in BENCHMARK_ROBOTS, f"{self.robot_uids} is not a valid robot uid."
+        assert self.env_uids in BENCHMARK_ENVS, f"{self.env_uids} is not a valid env uid."
+        assert self.cpu_sim, "CPU simulation is required for evaluation."
+
 
 def main(args: EvalConfig):
-    assert args.cpu_sim, "CPU simulation is required for evaluation."
-
     os.makedirs(args.save_path, exist_ok=True)
     profiler = Profiler(output_format="stdout")
     num_envs = args.num_envs
@@ -118,14 +113,16 @@ def main(args: EvalConfig):
     total_successes = 0.0
     success_dict = {
         "pretrained_policy_path": args.pretrained_policy_path,
-        "num_per_task": args.num_per_task,
+        "robot_uids": args.robot_uids,
+        "env_uids": args.env_uids if args.env_uids else BENCHMARK_ENVS,
+        "num_per_task": ENV_MAXSTEP_MAP,
         "env_success_rate": {},
         "total_success_rate": 0.0,
     }
 
     # 根据task参数决定评估哪些任务
-    if TASK:
-        eval_envs = [TASK]
+    if args.env_uids:
+        eval_envs = [args.env_uids]
     else:
         eval_envs = BENCHMARK_ENVS
 
@@ -212,7 +209,8 @@ def main(args: EvalConfig):
                         action = policy.select_action(element)
                         numpy_action = action.squeeze(0).to("cpu").numpy()
 
-                        if ROBOT == "widowxai":     # widowxai 本体在训练时动作维是7，但在评估时模拟环境中需要8维
+                        print(f"Step {i+1}/{N}, action: {numpy_action}")
+                        if args.robot_uids == "widowxai_wristcam":     # widowxai 本体在训练时动作维是7，但在评估时模拟环境中需要8维
                             numpy_action = np.append(numpy_action, numpy_action[-1])
 
                         obs, rew, terminated, truncated, info = env.step(numpy_action)

@@ -45,6 +45,8 @@ Install 🤗 LeRobot:
 
 #! 若要兼容 ManiSkill 项目，需要修改 pyproject.toml 中 return-sdk 的版本限制 "rerun-sdk>=0.21,<0.23"
 #! 因为0.23版本不支持numpy1.x，这与ManiSkill中的numpy版本要求冲突
+
+#! 修改 pyproject.toml 中 opencv-python-headless 的版本为 4.11.0.86 以支持 numpy1.x
 pip install -e .
 ```
 

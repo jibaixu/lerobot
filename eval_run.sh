@@ -25,7 +25,7 @@ for task_info in "${tasks[@]}"; do
     # robot: 四种之一
     robot=$(echo "$ckpt_path" | grep -oE '(panda_wristcam|widowxai_wristcam|xarm6_robotiq_wristcam|xarm7_robotiq_wristcam)')
     # env: 形如 Panda_PullCube-v1_diffusion_... 或 widowxai_PushCube-v1_diffusion_...
-    env=$(basename "$ckpt_path" | awk -F'_' '{print $(NF-4)}')
+    env=$(echo "$ckpt_path" | grep -oE '(PickCube-v1|PushCube-v1|StackCube-v1|PullCube-v1|PullCubeTool-v1|PlaceSphere-v1|LiftPegUpright-v1)')
     # step: checkpoints/040000/pretrained_model
     step=$(echo "$ckpt_path" | grep -oE 'checkpoints/[0-9]+' | awk -F'/' '{print $2}')
 

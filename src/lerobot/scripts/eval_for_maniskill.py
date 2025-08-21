@@ -209,7 +209,6 @@ def main(args: EvalConfig):
                         action = policy.select_action(element)
                         numpy_action = action.squeeze(0).to("cpu").numpy()
 
-                        print(f"Step {i+1}/{N}, action: {numpy_action}")
                         if args.robot_uids == "widowxai_wristcam":     # widowxai 本体在训练时动作维是7，但在评估时模拟环境中需要8维
                             numpy_action = np.append(numpy_action, numpy_action[-1])
 

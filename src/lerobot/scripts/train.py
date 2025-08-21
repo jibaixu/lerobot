@@ -63,6 +63,16 @@ TASK_EPISODE_MAP = {
     "LiftPegUpright-v1": list(range(600, 700)),
 }
 
+XARM6_TASK_EPISODE_MAP = {
+    "PickCube-v1": list(range(0, 100)),
+    "PullCube-v1": list(range(100, 200)),
+    "PushCube-v1": list(range(200, 300)),
+    "StackCube-v1": list(range(300, 400)),
+    "PullCubeTool-v1": list(range(400, 500)),
+    "PlaceSphere-v1": list(range(500, 600)),
+    "LiftPegUpright-v1": list(range(600, 700)),
+}
+
 def extract_task_from_job_name(job_name):
     """从job_name中提取任务名称
     job_name格式: {robot}_{task}_{policy_type}_{steps}_steps_b{batch_size}
@@ -167,6 +177,8 @@ def train(cfg: TrainPipelineConfig):
 
     logging.info("Creating dataset")
     dataset = make_dataset(cfg)
+    if "xarm6" in cfg.dataset.root:
+        TASK_EPISODE_MAP.update(XARM6_TASK_EPISODE_MAP)  #! xarm6 需要更新任务对应的episode索引映射
 
     # Create environment used for evaluating checkpoints during training on simulation data.
     # On real-world data, no need to create an environment as evaluations are done outside train.py,

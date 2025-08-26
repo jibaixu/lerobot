@@ -177,7 +177,8 @@ def train(cfg: TrainPipelineConfig):
 
     logging.info("Creating dataset")
     dataset = make_dataset(cfg)
-    if "xarm6" in cfg.dataset.root:
+    #! 兼容AllTasks-v4数据集的任务索引映射
+    if "AllTasks-v3" in cfg.dataset.root and "xarm6" in cfg.dataset.root:
         TASK_EPISODE_MAP.update(XARM6_TASK_EPISODE_MAP)  #! xarm6 需要更新任务对应的episode索引映射
 
     # Create environment used for evaluating checkpoints during training on simulation data.

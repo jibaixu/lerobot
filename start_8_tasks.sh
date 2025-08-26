@@ -3,9 +3,11 @@
 # 启动8个指定训练任务：widowxai的7个任务 + xarm6的第一个任务
 # 4张卡，每张卡2个任务
 
+version="v4"
+
 # 训练参数
 batch_size=64
-steps=200_000
+steps=100_000
 save_freq=20_000
 policy_type="diffusion"
 
@@ -34,11 +36,11 @@ tasks=(
 for task_info in "${tasks[@]}"; do
     IFS=':' read -r robot task gpu_id <<< "$task_info"
     
-    repo_id="AllTasks-v3/${robot}"
-    root_dir="/data2/wts/jibaixu/lerobot/data/AllTasks-v3/${robot}"
+    repo_id="AllTasks-${version}/${robot}"
+    root_dir="/data2/wts/jibaixu/lerobot/data/AllTasks-${version}/${robot}"
     timestamp=$(date +%Y%m%d_%H%M%S)
     job_name="${robot}_${task}_${policy_type}_${steps}_steps_b${batch_size}_${timestamp}"
-    output_dir="outputs/train/AllTasks-v3/${job_name}"
+    output_dir="outputs/train/AllTasks-${version}/${job_name}"
     log_file="$log_dir/${robot}_${task}_gpu${gpu_id}.log"
     
     echo "启动训练: $robot - $task (GPU $gpu_id)"
@@ -59,7 +61,7 @@ for task_info in "${tasks[@]}"; do
         --steps=$steps \
         --save_freq=$save_freq \
         --wandb.enable=True \
-        --wandb.project="AllTasks-v3" \
+        --wandb.project="AllTasks-${version}" \
         --wandb.mode="offline" \
         --wandb.disable_artifact=True \
         --job_name="$job_name" \

@@ -6,6 +6,7 @@
 version="v4"
 
 # 训练参数
+lr=3e-4
 batch_size=64
 steps=100_000
 save_freq=20_000
@@ -56,6 +57,7 @@ for task_info in "${tasks[@]}"; do
         --dataset.repo_id="$repo_id" \
         --dataset.root="$root_dir" \
         --policy.type="$policy_type" \
+        --policy.optimizer_lr=$lr \
         --policy.push_to_hub=False \
         --batch_size=$batch_size \
         --steps=$steps \

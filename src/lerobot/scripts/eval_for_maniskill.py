@@ -2,6 +2,7 @@
 
 """
 import sys
+sys.path.append('/data2/wts/jibaixu/lerobot/ManiSkill_v4')
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Annotated, Optional
@@ -12,6 +13,7 @@ import tyro
 import math
 import json
 import os
+from termcolor import colored
 
 from mani_skill.examples.benchmarking.profiling import Profiler
 from mani_skill.utils.visualization.misc import images_to_video, tile_images
@@ -56,12 +58,12 @@ def _quat2axisangle(quat):
 
 @dataclass
 class EvalConfig:
-    pretrained_policy_path: str = "/home/jibaixu/projects/lerobot/outputs/train/panda_diffusion_pullcube/checkpoints/020000/pretrained_model"
+    pretrained_policy_path: str = "/data2/wts/jibaixu/lerobot/outputs/train/AllTasks-v4/panda_wristcam_all_diffusion_200_000_steps_b64_20250826_120901/checkpoints/020000/pretrained_model"
     resize_size: int = 224
     replan_steps: int = 5
     """Environment ID"""
     robot_uids: str = "panda_wristcam"   # ["panda_wristcam", "widowxai_wristcam", "xarm6_robotiq_wristcam", "xarm7_robotiq_wristcam"]
-    env_uids: str = "PullCubeTool-v1"    # ["PickCube-v1", "PushCube-v1", "StackCube-v1", "PullCube-v1", "PullCubeTool-v1", "PlaceSphere-v1", "LiftPegUpright-v1"]
+    env_uids: str = "all"    # ["PickCube-v1", "PushCube-v1", "StackCube-v1", "PullCube-v1", "PullCubeTool-v1", "PlaceSphere-v1", "LiftPegUpright-v1"]
     obs_mode: Annotated[str, tyro.conf.arg(aliases=["-o"])] = "rgb"
     control_mode: Annotated[str, tyro.conf.arg(aliases=["-c"])] = "pd_ee_delta_pose"
     num_envs: Annotated[int, tyro.conf.arg(aliases=["-n"])] = 1
@@ -83,13 +85,13 @@ class EvalConfig:
     """Whether to save videos"""
     save_results: Optional[str] = None
     """Path to save results to. Should be path/to/results.csv"""
-    save_path: str = "outputs/eval/AllTasks-v3/panda_wristcam_pullcubetool-v1"
+    save_path: str = "outputs/eval/debug"
     shader: str = "default"
     num_per_task: int = 50
 
     def __post_init__(self):
         assert self.robot_uids in BENCHMARK_ROBOTS, f"{self.robot_uids} is not a valid robot uid."
-        assert self.env_uids in BENCHMARK_ENVS, f"{self.env_uids} is not a valid env uid."
+        assert self.env_uids in [None, "all"] or self.env_uids in BENCHMARK_ENVS, f"{self.env_uids} is not a valid env uid."
         assert self.cpu_sim, "CPU simulation is required for evaluation."
 
 
@@ -121,10 +123,12 @@ def main(args: EvalConfig):
     }
 
     # 根据task参数决定评估哪些任务
-    if args.env_uids:
-        eval_envs = [args.env_uids]
-    else:
+    if args.env_uids in [None, "all"]:
         eval_envs = BENCHMARK_ENVS
+        print(f"Evaluating environments: ", colored("AllTasks", "yellow", attrs=["bold"]))
+    else:
+        eval_envs = [args.env_uids]
+        print(f"Evaluating environments: ", colored(args.env_uids, "yellow", attrs=["bold"]))
 
     for env_id in eval_envs:
         if args.cpu_sim:

@@ -10,11 +10,11 @@ save_freq=20_000
 policy_type="diffusion"
 
 vision_backbone="resnet18" # ['resnet18', 'vit_b_16']
-vbckpt_type="scratch" # ['scatch', 'pretrained']
+vbckpt_type="scratch" # ['scratch', 'pretrained']
 
 declare -A vbckpt_paths
-vbckpt_paths[resnet18]="/path/to/ckpt/resnet18.pth"
-vbckpt_paths[vit_b_16]="/path/to/ckpt/vit_b_16.pth"
+vbckpt_paths[resnet18]="/path/to/checkpoints/.cache/torch/hub/checkpoints/resnet18-f37072fd.pth"
+vbckpt_paths[vit_b_16]="/path/to/checkpoints/.cache/torch/hub/checkpoints/vit_b_16-c867db91.pth"
 
 # 创建日志目录
 log_dir="logs/train_8_tasks_$(date +%Y%m%d_%H%M%S)"
@@ -42,7 +42,7 @@ for task_info in "${tasks[@]}"; do
     if [[ "$vbckpt_type" == "scratch" ]]; then
         use_group_norm=True
         pretrained_backbone_weights=""
-    else
+    elif [[ "$vbckpt_type" == "pretrained" ]]; then
         use_group_norm=False
         pretrained_backbone_weights="${vbckpt_paths[$vision_backbone]}"
     fi

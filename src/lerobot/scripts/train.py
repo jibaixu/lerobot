@@ -219,6 +219,10 @@ def train(cfg: TrainPipelineConfig):
     logging.info(f"{num_learnable_params=} ({format_big_number(num_learnable_params)})")
     logging.info(f"{num_total_params=} ({format_big_number(num_total_params)})")
     logging.info(f"single_task={colored(current_task or 'ALL_TASKS', 'yellow', attrs=['bold'])}")
+    
+    vbckpt_path = cfg.policy.pretrained_backbone_weights if cfg.policy.pretrained_backbone_weights else "None"
+    logging.info(f"vision_backbone={colored(cfg.policy.vision_backbone, 'yellow', attrs=['bold'])}")
+    logging.info(f"pretrained_backbone_weights={colored(vbckpt_path, 'yellow', attrs=['bold'])}")
 
     # create dataloader for offline training
     if hasattr(cfg.policy, "drop_n_last_frames"):

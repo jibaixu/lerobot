@@ -8,16 +8,7 @@ num_per_task=50
 
 # 仅保留显卡编号
 tasks=(
-    "0:/data2/wts/jibaixu/lerobot/outputs/train/AllTasks-v4/panda_wristcam_all_diffusion_200_000_steps_b64_20250826_120901/checkpoints/020000/pretrained_model"
-    "0:/data2/wts/jibaixu/lerobot/outputs/train/AllTasks-v4/panda_wristcam_all_diffusion_200_000_steps_b64_20250826_120901/checkpoints/040000/pretrained_model"
-    "0:/data2/wts/jibaixu/lerobot/outputs/train/AllTasks-v4/panda_wristcam_all_diffusion_200_000_steps_b64_20250826_120901/checkpoints/060000/pretrained_model"
-    "0:/data2/wts/jibaixu/lerobot/outputs/train/AllTasks-v4/panda_wristcam_all_diffusion_200_000_steps_b64_20250826_120901/checkpoints/080000/pretrained_model"
-    "1:/data2/wts/jibaixu/lerobot/outputs/train/AllTasks-v4/panda_wristcam_all_diffusion_200_000_steps_b64_20250826_120901/checkpoints/100000/pretrained_model"
-    "1:/data2/wts/jibaixu/lerobot/outputs/train/AllTasks-v4/panda_wristcam_all_diffusion_200_000_steps_b64_20250826_120901/checkpoints/120000/pretrained_model"
-    "1:/data2/wts/jibaixu/lerobot/outputs/train/AllTasks-v4/panda_wristcam_all_diffusion_200_000_steps_b64_20250826_120901/checkpoints/140000/pretrained_model"
-    "2:/data2/wts/jibaixu/lerobot/outputs/train/AllTasks-v4/panda_wristcam_all_diffusion_200_000_steps_b64_20250826_120901/checkpoints/160000/pretrained_model"
-    "2:/data2/wts/jibaixu/lerobot/outputs/train/AllTasks-v4/panda_wristcam_all_diffusion_200_000_steps_b64_20250826_120901/checkpoints/180000/pretrained_model"
-    "2:/data2/wts/jibaixu/lerobot/outputs/train/AllTasks-v4/panda_wristcam_all_diffusion_200_000_steps_b64_20250826_120901/checkpoints/200000/pretrained_model"
+    "0:/path/to/output/AllTasks-version/robot_env_policy_type_vision_backbone_vbckpt_type_step_timestamp/checkpoints/step/pretrained_model"
 )
 
 # 创建日志目录
@@ -37,12 +28,16 @@ for task_info in "${tasks[@]}"; do
     robot=$(echo "$ckpt_path" | grep -oE '(panda_wristcam|widowxai_wristcam|xarm6_robotiq_wristcam|xarm7_robotiq_wristcam)')
     # env: 形如 Panda_PullCube-v1_diffusion_... 或 widowxai_PushCube-v1_diffusion_...
     env=$(echo "$ckpt_path" | grep -oE '(all|PickCube-v1|PushCube-v1|StackCube-v1|PullCube-v1|PullCubeTool-v1|PlaceSphere-v1|LiftPegUpright-v1)')
+    # vision_backbone
+    vision_backbone=$(echo "$ckpt_path" | grep -oE '(resnet18|vitb16)')
+    # vbckpt_type（仅在/checkpoints前的路径部分匹配）
+    vbckpt_type=$(echo "$ckpt_path" | sed 's|/checkpoints/.*||' | grep -oE '(scratch|pretrained)')
     # step: checkpoints/040000/pretrained_model
     step=$(echo "$ckpt_path" | grep -oE 'checkpoints/[0-9]+' | awk -F'/' '{print $2}')
 
     timestamp=$(date +%Y%m%d_%H%M%S)
-    save_path="outputs/eval/AllTasks-${version}/${robot}_${env}_${policy_type}_${step}_${timestamp}"
-    log_file="$log_dir/${robot}_${env}_${step}_gpu${gpu_id}.log"
+    save_path="outputs/eval/AllTasks-${version}/${robot}_${env}_${policy_type}_${vision_backbone}_${vbckpt_type}_${step}_${timestamp}"
+    log_file="$log_dir/${robot}_${env}_${vision_backbone}_${vbckpt_type}_${step}_gpu${gpu_id}.log"
 
     echo "启动评测: $robot - $env (GPU $gpu_id)"
     CUDA_VISIBLE_DEVICES=$gpu_id python -m lerobot.scripts.eval_for_maniskill \

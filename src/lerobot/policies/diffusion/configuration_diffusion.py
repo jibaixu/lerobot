@@ -167,10 +167,10 @@ class DiffusionConfig(PreTrainedConfig):
         super().__post_init__()
 
         """Input validation (not exhaustive)."""
-        if not self.vision_backbone.startswith("resnet"):
-            raise ValueError(
-                f"`vision_backbone` must be one of the ResNet variants. Got {self.vision_backbone}."
-            )
+        # if not self.vision_backbone.startswith("resnet"):
+        #     raise ValueError(
+        #         f"`vision_backbone` must be one of the ResNet variants. Got {self.vision_backbone}."
+        #     )
 
         supported_prediction_types = ["epsilon", "sample"]
         if self.prediction_type not in supported_prediction_types:

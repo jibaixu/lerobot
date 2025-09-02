@@ -463,8 +463,10 @@ class DiffusionRgbEncoder(nn.Module):
 
         # Set up backbone.
         backbone_model = getattr(torchvision.models, config.vision_backbone)(
-            weights=config.pretrained_backbone_weights
+            weights=None
         )
+        if config.pretrained_backbone_weights:
+            backbone_model.load_state_dict(torch.load(config.pretrained_backbone_weights))
         # Note: This assumes that the layer4 feature map is children()[-3]
         # TODO(alexander-soare): Use a safer alternative.
         self.backbone = nn.Sequential(*(list(backbone_model.children())[:-2]))

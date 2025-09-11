@@ -91,15 +91,17 @@ def extract_task_from_job_name(job_name):
 def debug_on():
     import os
     import sys
-    # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "3"
     sys.argv = [
         "src/lerobot/scripts/train.py",
-        "--dataset.repo_id", "AllTasks-v3/panda_wristcam",
-        "--dataset.root", "/data2/wts/jibaixu/lerobot/data/AllTasks-v3/panda_wristcam",
+        "--dataset.repo_id", "AllTasks-v4/panda_wristcam",
+        "--dataset.root", "/data1_ssd/jibaixu/datasets/AllTasks-v4/panda_wristcam",
+        # "--dataset.repo_id", "['AllTasks-v4/panda_wristcam', 'AllTasks-v4/widowxai_wristcam', 'AllTasks-v4/xarm6_robotiq_wristcam', 'AllTasks-v4/xarm7_robotiq_wristcam']",
+        # "--dataset.root", "['/data1_ssd/jibaixu/datasets/AllTasks-v4/panda_wristcam', '/data1_ssd/jibaixu/datasets/AllTasks-v4/widowxai_wristcam', '/data1_ssd/jibaixu/datasets/AllTasks-v4/xarm6_robotiq_wristcam', '/data1_ssd/jibaixu/datasets/AllTasks-v4/xarm7_robotiq_wristcam']",
         "--policy.type", "diffusion",       # .type 属性将会引发 draccus 的插件发现机制
         "--policy.push_to_hub", "False",
-        "--job_name", "panda_wristcam_diffusion",
-        "--output_dir", "outputs/train/panda_diffusion"
+        "--job_name", "robot_diffusion",
+        "--output_dir", "outputs/train/debug"
     ]
 # debug_on()
 

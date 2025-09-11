@@ -35,7 +35,7 @@ for task_info in "${tasks[@]}"; do
     IFS=':' read -r robot task gpu_id <<< "$task_info"
     
     repo_id="AllTasks-${version}/${robot}"
-    root_dir="/data2/wts/jibaixu/lerobot/data/AllTasks-${version}/${robot}"
+    root_dir="/path/to/data/AllTasks-${version}/${robot}"
     timestamp=$(date +%Y%m%d_%H%M%S)
 
     # 根据use_group_norm自动设置ckpt_type和pretrained_backbone_weights
@@ -47,9 +47,9 @@ for task_info in "${tasks[@]}"; do
         pretrained_backbone_weights="${vbckpt_paths[$vision_backbone]}"
     fi
 
-    job_name="${robot}_${task}_${policy_type}_${vision_backbone}_${vbckpt_type}_${steps}_steps_b${batch_size}_${timestamp}"
+    job_name="${robot}_${task}_${policy_type}_${vision_backbone}_${vbckpt_type}_${steps}_steps_lr${lr}_b${batch_size}_${timestamp}"
     output_dir="outputs/train/AllTasks-${version}/${job_name}"
-    log_file="$log_dir/${robot}_${task}_gpu${gpu_id}_${vision_backbone}_${vbckpt_type}.log"
+    log_file="$log_dir/${robot}_${task}_gpu${gpu_id}_${vision_backbone}_${vbckpt_type}_lr${lr}.log"
     
     echo "启动训练: $robot - $task (GPU $gpu_id)"
     

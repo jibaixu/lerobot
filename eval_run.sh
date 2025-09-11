@@ -24,11 +24,18 @@ for task_info in "${tasks[@]}"; do
     IFS=':' read -r gpu_id ckpt_path <<< "$task_info"
 
     # 自动识别robot、env、step
-    # robot: 四种之一
-    robot=$(echo "$ckpt_path" | grep -oE '(panda_wristcam|widowxai_wristcam|xarm6_robotiq_wristcam|xarm7_robotiq_wristcam)')
-    # env: 形如 Panda_PullCube-v1_diffusion_... 或 widowxai_PushCube-v1_diffusion_...
-    env=$(echo "$ckpt_path" | grep -oE '(all|PickCube-v1|PushCube-v1|StackCube-v1|PullCube-v1|PullCubeTool-v1|PlaceSphere-v1|LiftPegUpright-v1)')
-    # vision_backbone
+        # 识别 robot
+        if [[ "$ckpt_path" =~ /all ]]; then
+            robot="all"
+        else
+            robot=$(echo "$ckpt_path" | grep -oE '(panda_wristcam|widowxai_wristcam|xarm6_robotiq_wristcam|xarm7_robotiq_wristcam)')
+        fi
+        # 识别 env
+        if [[ "$ckpt_path" =~ _all_ ]]; then
+            env="all"
+        else
+            env=$(echo "$ckpt_path" | grep -oE '(PickCube-v1|PushCube-v1|StackCube-v1|PullCube-v1|PullCubeTool-v1|PlaceSphere-v1|LiftPegUpright-v1)')
+        fi
     vision_backbone=$(echo "$ckpt_path" | grep -oE '(resnet18|vitb16)')
     # vbckpt_type（仅在/checkpoints前的路径部分匹配）
     vbckpt_type=$(echo "$ckpt_path" | sed 's|/checkpoints/.*||' | grep -oE '(scratch|pretrained)')

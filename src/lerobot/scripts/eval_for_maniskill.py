@@ -26,13 +26,12 @@ from lerobot.policies.act.modeling_act import ACTPolicy
 
 
 BENCHMARK_ROBOTS = ["panda_wristcam", "widowxai_wristcam", "xarm6_robotiq_wristcam", "xarm7_robotiq_wristcam"]
-BENCHMARK_ENVS = ["PickCube-v1", "PushCube-v1", "StackCube-v1", "PullCube-v1", "PullCubeTool-v1", "PlaceSphere-v1", "LiftPegUpright-v1",]
+BENCHMARK_ENVS = ["PickCube-v1", "PushCube-v1", "StackCube-v1", "PullCube-v1", "PlaceSphere-v1", "LiftPegUpright-v1",]
 ENV_MAXSTEP_MAP = {
     "PickCube-v1": 500,
     "PushCube-v1": 500,
     "StackCube-v1": 500,
     "PullCube-v1": 500,
-    "PullCubeTool-v1": 800,
     "PlaceSphere-v1": 500,
     "LiftPegUpright-v1": 700,
 }

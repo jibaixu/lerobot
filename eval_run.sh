@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version="v4"
+version="v5"
 
 # 评测参数
 policy_type="diffusion"

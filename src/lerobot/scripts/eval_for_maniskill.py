@@ -141,11 +141,11 @@ def main(args: EvalConfig):
             "total_success_rate": 0.0,
         }
 
-        for env_id in eval_envs:
+        for env_uid in eval_envs:
             if args.cpu_sim:
                 def make_env():
                     def _init():
-                        env = gym.make(env_id,
+                        env = gym.make(env_uid,
                                     obs_mode=args.obs_mode,
                                     sim_config=sim_config,
                                     robot_uids=robot_uid,
@@ -179,7 +179,7 @@ def main(args: EvalConfig):
                         images.append(np.expand_dims(env.render(), axis=0)) if args.cpu_sim else images.append(env.render().cpu().numpy())
                         # images.append(obs["sensor_data"]["third_view_camera"]["rgb"].cpu().numpy())
 
-                    step_length = ENV_MAXSTEP_MAP[env_id]
+                    step_length = ENV_MAXSTEP_MAP[env_uid]
                     N = step_length     # LeRobot 中的 policy 内部维护的 queue 队列会自己完成 replan
 
                     with profiler.profile("env.step", total_steps=N, num_envs=num_envs):
@@ -247,13 +247,13 @@ def main(args: EvalConfig):
                         images_to_video(
                             images,
                             output_dir=args.save_path,
-                            video_name=f"{env_id}-{seed}-num_envs={num_envs}-obs_mode={args.obs_mode}-render_mode={args.render_mode}--success={terminated}",
+                            video_name=f"{robot_uid}-{env_uid}-{seed}-num_envs={num_envs}-obs_mode={args.obs_mode}-render_mode={args.render_mode}--success={terminated}",
                             fps=30,
                         )
                         del images
             env.close()
             print(f"Task Success Rate: {task_successes / args.num_per_task}")
-            success_dict["env_success_rate"][env_id] = task_successes / args.num_per_task
+            success_dict["env_success_rate"][env_uid] = task_successes / args.num_per_task
         
         print(f"Total Success Rate: {total_successes / (args.num_per_task * len(eval_envs))}")
         success_dict['total_success_rate'] = total_successes / (args.num_per_task * len(eval_envs))

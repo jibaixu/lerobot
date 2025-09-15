@@ -36,7 +36,7 @@ for task_info in "${tasks[@]}"; do
         else
             env=$(echo "$ckpt_path" | grep -oE '(PickCube-v1|PushCube-v1|StackCube-v1|PullCube-v1|PullCubeTool-v1|PlaceSphere-v1|LiftPegUpright-v1)')
         fi
-    vision_backbone=$(echo "$ckpt_path" | grep -oE '(resnet18|vitb16)')
+    vision_backbone=$(echo "$ckpt_path" | grep -oE '(resnet18|vit_b_16)')
     # vbckpt_type（仅在/checkpoints前的路径部分匹配）
     vbckpt_type=$(echo "$ckpt_path" | sed 's|/checkpoints/.*||' | grep -oE '(scratch|pretrained)')
     # step: checkpoints/040000/pretrained_model
